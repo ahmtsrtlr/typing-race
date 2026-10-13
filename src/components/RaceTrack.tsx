@@ -133,7 +133,7 @@ export function RaceTrack({
       </div>
       <div className="track-bottom">
         <span>BAŞLANGIÇ</span>
-        <span>YAZMAYA DEVAM ET. GERİ DÖNME.</span>
+        <span>DOĞRU HARFLER PUAN KAZANDIRIR.</span>
         <span>
           BİTİŞ <Flag size={12} />
         </span>

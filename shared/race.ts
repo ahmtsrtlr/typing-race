@@ -4,23 +4,25 @@ export const ERROR_PENALTY = 2;
 /** Each position is independent: one mistake does not block later characters. */
 export function countCorrectCharacters(value: string, target: string): number {
   let correct = 0;
-  for (let i = 0; i < value.length; i++) if (value[i] === target[i]) correct++;
+  for (let i = 0; i < value.length; i++)
+    if (value[i] === target[i] && !/\s/.test(value[i])) correct++;
   return correct;
 }
 export function metrics(
   correct: number,
   attempts: number,
   errors: number,
-  length: number,
+  maxScore: number,
   elapsedMs: number,
   typed: number,
-  previousProgress = 0,
 ) {
+  const penalty = errors * ERROR_PENALTY;
+  const score = correct - penalty;
   return {
     typed,
-    penalty: errors * ERROR_PENALTY,
-    score: correct - errors * ERROR_PENALTY,
-    progress: Math.max(previousProgress, Math.min(100, Math.floor((typed / length) * 100))),
+    penalty,
+    score,
+    progress: maxScore > 0 ? Math.max(0, Math.min(100, Math.floor((score / maxScore) * 100))) : 0,
     wpm: elapsedMs > 0 ? Math.round(correct / 5 / (elapsedMs / 60000)) : 0,
     accuracy: attempts > 0 ? Math.round(((attempts - errors) / attempts) * 100) : 100,
   };

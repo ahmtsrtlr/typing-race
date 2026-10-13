@@ -47,7 +47,7 @@ export function TypingPanel({ text, value, phase, finished, onType }: Props) {
     <section className="typing-card">
       <div className="panel-header">
         <span>
-          <Keyboard size={17} /> {finished ? 'Bitiş çizgisini geçtin!' : 'Sıra parmaklarında'}
+          <Keyboard size={17} /> {finished ? 'Metni tamamladın!' : 'Sıra parmaklarında'}
         </span>
         <span className="small-label">KÜÇÜK HARF · İŞARETSİZ</span>
       </div>

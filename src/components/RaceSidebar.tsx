@@ -65,7 +65,7 @@ export function RaceSidebar({ room, playerId }: { room: Room; playerId: string }
                   {!p.connected
                     ? 'Bağlantı kesildi'
                     : p.finishedAt
-                      ? 'Tamamladı'
+                      ? 'Metni tamamladı'
                       : `${p.progress}% tamamlandı`}
                 </small>
               </div>
@@ -87,7 +87,7 @@ export function RaceSidebar({ room, playerId }: { room: Room; playerId: string }
         <span className="tip-icon">✦</span>
         <h3>Ritmini bul.</h3>
         <p>
-          Hata yaptığında geri dönme. Yazmaya devam et; her hata 2 ceza puanı getirir. En yüksek net
+          Yazmaya devam et; her hata 2 ceza puanı getirir. Boşluklar puan kazandırmaz. En yüksek net
           puan kazanır.
         </p>
         <div className="key-row">

@@ -222,10 +222,9 @@ export function registerGame(io: GameServer, options: GameOptions = {}) {
                   p.correct,
                   p.attempts,
                   p.errors,
-                  room.text.length,
+                  room.text.replace(/\s/g, '').length,
                   now - room.startAt!,
                   p.typed,
-                  p.progress,
                 ),
               );
           });
@@ -272,10 +271,9 @@ export function registerGame(io: GameServer, options: GameOptions = {}) {
           p.correct,
           p.attempts,
           p.errors,
-          room.text.length,
+          room.text.replace(/\s/g, '').length,
           now - room.startAt!,
           p.typed,
-          p.progress,
         ),
       );
       if (p.typed === room.text.length) p.finishedAt = now;

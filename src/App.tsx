@@ -122,13 +122,13 @@ export default function App() {
               <li>Arkadaşlarınla hazır ol. Oda sahibi yarışı başlatsın.</li>
               <li>Geri sayımdan sonra metni yaz. Tüm metinler küçük harfli ve noktalamasızdır.</li>
               <li>
-                Yanlış yazsan da devam et. Her doğru karakter +1, her hata −2 puan. Koşucun geri
-                gitmez.
+                Yanlış yazsan da devam et. Her doğru harf +1, her hata −2 puan. Boşluklar puan
+                kazandırmaz; koşucunun konumu net puana göre değişir.
               </li>
               <li>En yüksek net puan kazanır. Eşit puanda önce bitiren öne geçer.</li>
             </ol>
             <p>
-              WPM, beş doğru karakteri bir kelime sayar. Doğruluk, tüm yazma denemelerindeki doğru
+              WPM, beş doğru harfi bir kelime sayar. Doğruluk, tüm yazma denemelerindeki doğru
               karakter oranıdır; silinen hatalar da hesaba katılır.
             </p>
             <button className="button primary full" onClick={() => setHelp(false)}>

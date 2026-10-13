@@ -80,7 +80,7 @@ export function RacePage({ game, sound }: { game: Game; sound: boolean }) {
         <button className="button subtle" onClick={game.leave} disabled={game.pending}>
           <LogOut size={14} /> Yarıştan ayrıl
         </button>
-        <span>WPM = doğru karakter / 5 / geçen dakika</span>
+        <span>WPM = doğru harf / 5 / geçen dakika</span>
       </div>
     </section>
   );

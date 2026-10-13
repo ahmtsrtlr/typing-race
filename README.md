@@ -1,6 +1,6 @@
 # Typing Race
 
-React + TypeScript + Vite + Tailwind CSS ön yüzü ve Node.js + Socket.IO sunucusuyla çalışan çok oyunculu yazı yarışı MVP'si. Çizgi film tarzındaki SVG koşucular, yazma ilerlemesine göre yatay kulvarlarda ilerler. Her hata 2 ceza puanı getirir; koşucu geri gitmez.
+React + TypeScript + Vite + Tailwind CSS ön yüzü ve Node.js + Socket.IO sunucusuyla çalışan çok oyunculu yazı yarışı MVP'si. Çizgi film tarzındaki SVG koşucular, yazma ilerlemesine göre yatay kulvarlarda ilerler. Her hata 2 ceza puanı getirir; koşucunun konumu net puana göre değişir. Boşluklar puan kazandırmaz.
 
 ## Hızlı başlat
 
@@ -20,7 +20,7 @@ Tarayıcıda **http://localhost:5173** adresini aç. Vite ve oyun sunucusu tek k
 3. İki sekmede de **Hazırım** düğmesine bas.
 4. Oda sahibi **Yarışı başlat** düğmesine bassın.
 5. Üç saniyelik geri sayımdan sonra metni yaz. Sekmelerde koşucular ve sıralama eşzamanlı güncellenir.
-6. Bir hata yapıp yazmaya devam et. Sonraki doğru karakterler puan kazandırır; her yanlış karakter 2 puan ceza getirir. Geri silmek isteğe bağlıdır ve koşucuyu geri götürmez.
+6. Bir hata yapıp yazmaya devam et. Sonraki doğru karakterler puan kazandırır; her yanlış karakter 2 puan ceza getirir. Geri silmek isteğe bağlıdır; ilerleme mevcut net puana bağlıdır.
 7. Metinler tamamlandığında ya da süre dolduğunda sonuçları gör. Oda sahibi **Bir tur daha** ile lobiye dönebilir.
 
 Ana sayfadaki pist açıkça işaretlenmiş **örnek görünüm**dür. Simüle edilmiş rakip veya sahte çevrim içi oyuncu yoktur. **Antrenman yap**, aynı gerçek sunucuda tek oyunculu bir oda açar; lobide hazır olup yarışı başlat.
@@ -55,11 +55,11 @@ npm start
 - Süre seçenekleri **60 / 90 / 120 saniye**; seçimi oda sahibi oluştururken yapar.
 - Metinler Türkçedir; tamamı küçük harfli ve noktalamasızdır. Türkçe harfler korunur. 36 farklı metin doğa, günlük yaşam, teknoloji, seyahat, spor ve sanat gibi konuları kapsar.
 - Her oda metin havuzunu karıştırılmış sırayla kullanır. Bütün havuz bitmeden aynı odada bir metin tekrar gelmez; yeni döngünün ilk metni önceki turun metninden farklıdır.
-- Mesafe: metinde ulaşılan en ileri karakter konumu. Yanlış karakter de yazma imlecini ilerletir; koşucu hatada veya geri silmede geri gitmez. Metnin sonuna gelmek, hatalar olsa da bitiş sayılır.
-- **İlerleme** = `max(önceki ilerleme, floor(yazılmış karakter / metin uzunluğu × 100))`.
-- **WPM** = `round((doğru karakter / 5) / geçen dakika)`. Tamamlayan oyuncunun WPM değeri bitiş anında sabitlenir.
+- Mesafe net puana bağlıdır. Doğru boşluklar imleci ilerletir ama puan kazandırmaz. Gereksiz boşluk ve yanlış harfler hata sayılır ve 2 puan ceza getirir. Metnin sonuna gelmek yazmayı tamamlar; puanı düşük oyuncu pistte yüzde yüz ilerlemiş sayılmaz.
+- **İlerleme** = `clamp(floor(net puan / metindeki boşluk dışı karakter sayısı × 100), 0, 100)`.
+- **WPM** = `round((doğru boşluk dışı karakter / 5) / geçen dakika)`. Tamamlayan oyuncunun WPM değeri bitiş anında sabitlenir.
 - **Doğruluk** = `round((yazma denemesi − yanlış karakter) / yazma denemesi × 100)`. Silme deneme sayılmaz; silinen hatalar kayıtta kalır. Henüz yazılmamışsa %100 görünür.
-- **Ceza** = `yanlış yazma denemesi × 2`. **Net puan** = `mevcut metindeki doğru karakter − ceza`. Puan negatif olabilir. Hata sonrasındaki doğru karakterler bağımsız sayılır; önceki hata puan kazandırmayı engellemez. Silme ceza iadesi yapmaz, aynı karakteri tekrar yazmak puanı çoğaltmaz.
+- **Ceza** = `yanlış yazma denemesi × 2`. **Net puan** = `mevcut metindeki doğru boşluk dışı karakter − ceza`. Puan negatif olabilir. Hata sonrasındaki doğru karakterler bağımsız sayılır; önceki hata puan kazandırmayı engellemez. Silme ceza iadesi yapmaz, aynı karakteri tekrar yazmak puanı çoğaltmaz.
 - Sıralama önce net puana göre yapılır. Eşit puanda tamamlayanlar, ardından bitiş zamanı; tamamlamayan eşit puanlılarda doğru karakter, doğruluk ve WPM belirleyicidir.
 - İstemci yüzde veya WPM göndermez; yalnızca metindeki tek karakterlik ekleme/silme değişimini gönderir. Sunucu değişimi doğrular ve tüm metrikleri kendisi hesaplar.
 - Yapıştırma, metin ortasını değiştirme ve birden fazla karakteri topluca ekleme reddedilir. Klavye/IME girdisi tek karakterlik değişim üretmelidir; sesle yazma desteklenmez.

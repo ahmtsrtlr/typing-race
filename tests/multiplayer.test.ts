@@ -13,10 +13,10 @@ async function waitFor(check: () => boolean, ms = 2000) {
     await new Promise((resolve) => setTimeout(resolve, 10));
   }
 }
-async function setup() {
+async function setup(text = 'İşık.') {
   const http = createServer();
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(http);
-  const game = registerGame(io, { countdownMs: 150, tickMs: 10, texts: ['İşık.'] });
+  const game = registerGame(io, { countdownMs: 150, tickMs: 10, texts: [text] });
   await new Promise<void>((r) => http.listen(0, '127.0.0.1', r));
   const address = http.address();
   assert.ok(address && typeof address !== 'string');
@@ -88,7 +88,7 @@ test('two real clients: create, join, readiness, countdown, error correction, fi
     }
     await waitFor(() => env.states.get(host)?.players[0].finishedAt !== null);
     assert.equal(env.states.get(host)!.phase, 'racing');
-    assert.equal(env.states.get(host)!.players[0].progress, 100);
+    assert.equal(env.states.get(host)!.players[0].progress, 60);
     assert.equal(env.states.get(host)!.players[0].accuracy, 83);
     assert.equal(env.states.get(host)!.players[0].penalty, 2);
     assert.equal(env.states.get(host)!.players[0].score, 3);
@@ -233,14 +233,14 @@ test('an uncorrected mistake allows completion and later correct characters stil
     assert.equal(p.errors, 1);
     assert.equal(p.penalty, 2);
     assert.equal(p.score, 2);
-    assert.equal(p.progress, 100);
+    assert.equal(p.progress, 40);
     assert.equal(p.accuracy, 80);
     assert.notEqual(p.finishedAt, null);
   } finally {
     await env.close();
   }
 });
-test('backspace keeps distance, does not refund penalty or duplicate points', async () => {
+test('live progress follows score and corrected errors do not refund penalties', async () => {
   const env = await setup();
   try {
     const host = await env.connect();
@@ -248,26 +248,43 @@ test('backspace keeps distance, does not refund penalty or duplicate points', as
     await ready(host);
     await start(host);
     await waitFor(() => env.states.get(host)?.phase === 'racing');
-    host.emit('race:type', 'X');
-    host.emit('race:type', 'Xş');
-    await waitFor(() => env.states.get(host)?.players[0].typed === 2);
-    const progress = env.states.get(host)!.players[0].progress;
-    host.emit('race:type', 'X');
-    host.emit('race:type', '');
-    await waitFor(() => env.states.get(host)?.players[0].typed === 0);
-    let p = env.states.get(host)!.players[0];
-    assert.equal(p.progress, progress);
-    assert.equal(p.score, -2);
-    assert.equal(p.penalty, 2);
     host.emit('race:type', 'İ');
     host.emit('race:type', 'İş');
     await waitFor(() => env.states.get(host)?.players[0].typed === 2);
-    p = env.states.get(host)!.players[0];
-    assert.equal(p.progress, progress);
-    assert.equal(p.score, 0);
-    assert.equal(p.correct, 2);
-    await new Promise((r) => setTimeout(r, 30));
-    assert.equal(env.states.get(host)!.players[0].progress, progress);
+    assert.equal(env.states.get(host)!.players[0].progress, 40);
+    host.emit('race:type', 'İşX');
+    await waitFor(() => env.states.get(host)?.players[0].typed === 3);
+    assert.equal(env.states.get(host)!.players[0].progress, 0);
+    host.emit('race:type', 'İş');
+    host.emit('race:type', 'İşı');
+    await waitFor(() => env.states.get(host)?.players[0].correct === 3);
+    const p = env.states.get(host)!.players[0];
+    assert.equal(p.penalty, 2);
+    assert.equal(p.score, 1);
+    assert.equal(p.progress, 20);
+  } finally {
+    await env.close();
+  }
+});
+test('space spam never moves a runner even at actual word boundaries', async () => {
+  const env = await setup('a b c');
+  try {
+    const host = await env.connect();
+    await create(host);
+    await ready(host);
+    await start(host);
+    await waitFor(() => env.states.get(host)?.phase === 'racing');
+    let value = '';
+    for (let i = 0; i < 5; i++) {
+      value += ' ';
+      host.emit('race:type', value);
+    }
+    await waitFor(() => env.states.get(host)?.phase === 'finished');
+    const p = env.states.get(host)!.players[0];
+    assert.equal(p.correct, 0);
+    assert.equal(p.penalty, 6);
+    assert.equal(p.score, -6);
+    assert.equal(p.progress, 0);
   } finally {
     await env.close();
   }
