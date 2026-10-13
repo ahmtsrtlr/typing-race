@@ -1,9 +1,5 @@
 import type { Player } from './types';
-export const TEXTS = [
-  'Güneşli bir sabah, küçük bir kaplumbağa koşu pistine geldi. Hızlı olmak güzel, ama pes etmemek daha güzeldi. Derin bir nefes aldı ve ilk adımını attı. Yol boyunca arkadaşları ona destek oldu. Bitiş çizgisine vardığında herkes aynı şeyi öğrendi: Her büyük başarı, küçük bir adımla başlar.',
-  'Rüzgar ağaçların arasından geçerken parkta yeni bir yarış başladı. Herkes kendi kulvarında, kendi hızında ilerliyordu. Bir an durmak yolun bittiği anlamına gelmez. Bazen yeniden başlamak için sadece bir nefes gerekir. Gökyüzü maviydi, pist hazırdı ve bugün güzel bir gün olacaktı.',
-  'Küçük bir kasabada her cuma meydanda buluşurduk. Yanımızda kitaplar, renkli kalemler ve anlatacak yeni hikayeler olurdu. Kimimiz uzak yerlere gitmek ister, kimimiz bir oyun tasarlardı. Hayallerimiz farklı olsa da birlikte geçirdiğimiz zaman hepimize iyi gelirdi. En güzel fikirler bazen sıradan bir sohbetten doğar.',
-];
+export { TEXTS } from './texts';
 export const ERROR_PENALTY = 2;
 /** Each position is independent: one mistake does not block later characters. */
 export function countCorrectCharacters(value: string, target: string): number {

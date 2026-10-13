@@ -1,4 +1,5 @@
 import { randomInt } from 'node:crypto';
+import { createTextDeck } from './textDeck';
 import type { Server, Socket } from 'socket.io';
 import { countCorrectCharacters, metrics, TEXTS, validEdit } from '../shared/race';
 import {
@@ -15,6 +16,7 @@ type GameSocket = Socket<ClientToServerEvents, ServerToClientEvents>;
 interface InternalRoom {
   room: Room;
   inputs: Map<string, string>;
+  nextText: () => string;
   ticker?: ReturnType<typeof setInterval>;
 }
 interface GameOptions {
@@ -151,7 +153,7 @@ export function registerGame(io: GameServer, options: GameOptions = {}) {
         endAt: null,
         serverNow: Date.now(),
       };
-      const entry: InternalRoom = { room, inputs: new Map() };
+      const entry: InternalRoom = { room, inputs: new Map(), nextText: createTextDeck(texts) };
       rooms.set(code, entry);
       memberships.set(socket.id, code);
       void socket.join(code);
@@ -201,7 +203,7 @@ export function registerGame(io: GameServer, options: GameOptions = {}) {
         return ack({ ok: false, error: 'Önce tüm oyuncular hazır olmalı.' });
       const room = entry.room;
       room.phase = 'countdown';
-      room.text = texts[randomInt(texts.length)];
+      room.text = entry.nextText();
       room.startAt = Date.now() + countdownMs;
       room.endAt = room.startAt + room.duration * 1000;
       room.players.forEach(zero);

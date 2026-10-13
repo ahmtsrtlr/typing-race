@@ -49,7 +49,7 @@ export function TypingPanel({ text, value, phase, finished, onType }: Props) {
         <span>
           <Keyboard size={17} /> {finished ? 'Bitiş çizgisini geçtin!' : 'Sıra parmaklarında'}
         </span>
-        <span className="small-label">TÜRKÇE · NOKTALAMA AÇIK</span>
+        <span className="small-label">KÜÇÜK HARF · İŞARETSİZ</span>
       </div>
       <div
         ref={targetPanel}

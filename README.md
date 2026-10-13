@@ -47,13 +47,14 @@ npm start
 
 `.env.example` dosyasını `.env` olarak kopyalayabilirsin. `PORT` varsayılan olarak 3001'dir. `CLIENT_ORIGIN`, ayrı bir ön yüz barındırırken izin verilen adresleri virgülle ayırır. Vite proxy dışında kullanmak için `VITE_SOCKET_URL` ayarla ve ön yüzü yeniden derle. Oda kodları yalnızca aynı sunucu örneğinde geçerlidir.
 
-**Bu paket canlı bir URL'ye dağıtılmış değildir.** Gerçek çok oyunculu yayın için uzun süre çalışan Node.js sürecini ve WebSocket yükseltmesini destekleyen bir sunucu gerekir. `dist` klasörünü tek başına statik barındırmaya yüklemek oyun sunucusunu çalıştırmaz.
+**Canlı oyun: https://typing-race-phvr.onrender.com** Gerçek çok oyunculu yayın için uzun süre çalışan Node.js sürecini ve WebSocket yükseltmesini destekleyen bir sunucu gerekir. `dist` klasörünü tek başına statik barındırmaya yüklemek oyun sunucusunu çalıştırmaz.
 
 ## Oyun kuralları ve hesaplama
 
 - Odada en fazla **6** oyuncu bulunabilir. Tek kişilik antrenman da desteklenir.
 - Süre seçenekleri **60 / 90 / 120 saniye**; seçimi oda sahibi oluştururken yapar.
-- Metinler Türkçedir. Büyük/küçük harf, boşluk ve noktalama aynen yazılmalıdır.
+- Metinler Türkçedir; tamamı küçük harfli ve noktalamasızdır. Türkçe harfler korunur. 36 farklı metin doğa, günlük yaşam, teknoloji, seyahat, spor ve sanat gibi konuları kapsar.
+- Her oda metin havuzunu karıştırılmış sırayla kullanır. Bütün havuz bitmeden aynı odada bir metin tekrar gelmez; yeni döngünün ilk metni önceki turun metninden farklıdır.
 - Mesafe: metinde ulaşılan en ileri karakter konumu. Yanlış karakter de yazma imlecini ilerletir; koşucu hatada veya geri silmede geri gitmez. Metnin sonuna gelmek, hatalar olsa da bitiş sayılır.
 - **İlerleme** = `max(önceki ilerleme, floor(yazılmış karakter / metin uzunluğu × 100))`.
 - **WPM** = `round((doğru karakter / 5) / geçen dakika)`. Tamamlayan oyuncunun WPM değeri bitiş anında sabitlenir.

@@ -120,9 +120,7 @@ export default function App() {
             <ol>
               <li>Adını ve koşucu rengini seç. Oda oluştur ya da 6 karakterlik kodla katıl.</li>
               <li>Arkadaşlarınla hazır ol. Oda sahibi yarışı başlatsın.</li>
-              <li>
-                Geri sayımdan sonra ekrandaki metni aynen yaz. Büyük/küçük harf ve noktalama önemli.
-              </li>
+              <li>Geri sayımdan sonra metni yaz. Tüm metinler küçük harfli ve noktalamasızdır.</li>
               <li>
                 Yanlış yazsan da devam et. Her doğru karakter +1, her hata −2 puan. Koşucun geri
                 gitmez.
