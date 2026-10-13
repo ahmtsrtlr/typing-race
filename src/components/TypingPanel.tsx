@@ -1,7 +1,19 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Keyboard, ShieldAlert, LockKeyhole } from 'lucide-react';
 import { ERROR_PENALTY, validEdit } from '../../shared/race';
 import type { RoomPhase } from '../../shared/types';
+// Compare viewport rectangles; offsetTop can refer to different parent elements.
+function followCursor(panel: HTMLDivElement | null, cursor: HTMLSpanElement | null) {
+  if (!panel || !cursor) return;
+  const panelRect = panel.getBoundingClientRect();
+  const cursorRect = cursor.getBoundingClientRect();
+  const lineTop = panel.scrollTop + cursorRect.top - panelRect.top - panel.clientTop;
+  const top = Math.max(
+    0,
+    Math.min(panel.scrollHeight - panel.clientHeight, lineTop - panel.clientHeight * 0.25),
+  );
+  if (Math.abs(panel.scrollTop - top) > 1) panel.scrollTop = top;
+}
 interface Props {
   text: string;
   value: string;
@@ -12,14 +24,23 @@ interface Props {
 export function TypingPanel({ text, value, phase, finished, onType }: Props) {
   const input = useRef<HTMLTextAreaElement>(null);
   const cursor = useRef<HTMLSpanElement>(null);
+  const targetPanel = useRef<HTMLDivElement>(null);
   const disabled = phase !== 'racing' || finished;
   useEffect(() => {
     if (!disabled && window.matchMedia('(min-width: 761px)').matches) input.current?.focus();
   }, [disabled]);
+  useLayoutEffect(() => {
+    followCursor(targetPanel.current, cursor.current);
+  }, [value, text]);
   useEffect(() => {
-    const panel = cursor.current?.parentElement;
-    const current = cursor.current;
-    if (panel && current) panel.scrollTop = current.offsetTop - panel.offsetTop - 50;
+    const panel = targetPanel.current;
+    if (!panel) return;
+    const follow = () => followCursor(panel, cursor.current);
+    const observer = new ResizeObserver(follow);
+    observer.observe(panel);
+    return () => observer.disconnect();
+  }, [text]);
+  useEffect(() => {
     if (input.current) input.current.scrollTop = input.current.scrollHeight;
   }, [value]);
   return (
@@ -30,11 +51,16 @@ export function TypingPanel({ text, value, phase, finished, onType }: Props) {
         </span>
         <span className="small-label">TÜRKÇE · NOKTALAMA AÇIK</span>
       </div>
-      <div className="target-text" aria-label="Yazılacak metin">
+      <div
+        ref={targetPanel}
+        className="target-text"
+        style={{ scrollBehavior: 'auto' }}
+        aria-label="Yazılacak metin"
+      >
         {[...text].map((char, i) => (
           <span
             key={i}
-            ref={i === value.length ? cursor : undefined}
+            ref={i === Math.min(value.length, text.length - 1) ? cursor : undefined}
             className={
               i < value.length
                 ? char === value[i]
